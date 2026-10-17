@@ -18,7 +18,7 @@ use CodeIgniter\CLI\CLI;
  */
 class PruneSessions extends BaseCommand
 {
-    protected $group       = 'KeyVault';
+    protected $group       = 'KeyGen';
     protected $name        = 'sessions:prune';
     protected $description = 'Delete expired API session tokens.';
     protected $usage       = 'sessions:prune [--grace <seconds>]';

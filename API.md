@@ -1,6 +1,6 @@
 # Licensing API — Admin Guide
 
-This document explains how to call the KeyVault licensing API from your
+This document explains how to call the KeyGen licensing API from your
 software. It is written for the **admin** who owns the product (and the
 developer integrating the client), not for end users.
 

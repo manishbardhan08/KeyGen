@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================
-#  KeyVault — nightly database backup
+#  KeyGen — nightly database backup
 #  Usage:  ./deploy/backup-db.sh
-#  Cron:   0 2 * * * /var/www/authgen/deploy/backup-db.sh
+#  Cron:   0 2 * * * /var/www/keygen/deploy/backup-db.sh
 # ============================================================
 set -euo pipefail
 
@@ -24,7 +24,7 @@ DB_USER="$(get 'database.default.username')"
 DB_PASS="$(get 'database.default.password')"
 
 STAMP="$(date +%Y%m%d-%H%M%S)"
-FILE="$OUT_DIR/authgen-$STAMP.sql"
+FILE="$OUT_DIR/keygen-$STAMP.sql"
 
 echo "[$(date '+%F %T')] dumping $DB_NAME → $FILE"
 
@@ -37,5 +37,5 @@ gzip -f "$FILE"
 echo "[$(date '+%F %T')] done ($(du -h "$FILE.gz" | cut -f1))"
 
 # --- prune old backups ---
-find "$OUT_DIR" -name 'authgen-*.sql.gz' -mtime +"$KEEP_DAYS" -delete
+find "$OUT_DIR" -name 'keygen-*.sql.gz' -mtime +"$KEEP_DAYS" -delete
 echo "[$(date '+%F %T')] pruned backups older than ${KEEP_DAYS}d"

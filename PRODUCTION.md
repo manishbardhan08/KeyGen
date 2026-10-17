@@ -1,4 +1,4 @@
-# KeyVault — Production Runbook
+# KeyGen — Production Runbook
 
 Step-by-step instructions to take this app live on a fresh Ubuntu VPS.
 Follow the phases **in order** and tick them off. Every command is copy-paste
@@ -63,14 +63,14 @@ sudo mysql
 ```
 
 ```sql
-CREATE DATABASE authgen CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE keygen CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- runtime app user (least privilege)
-CREATE USER 'authgen_app'@'127.0.0.1' IDENTIFIED BY 'STRONG_DB_PASSWORD';
-GRANT SELECT, INSERT, UPDATE, DELETE ON authgen.* TO 'authgen_app'@'127.0.0.1';
+CREATE USER 'keygen_app'@'127.0.0.1' IDENTIFIED BY 'STRONG_DB_PASSWORD';
+GRANT SELECT, INSERT, UPDATE, DELETE ON keygen.* TO 'keygen_app'@'127.0.0.1';
 
 -- privileges needed once for `php spark migrate`
-GRANT CREATE, ALTER, INDEX, DROP, REFERENCES ON authgen.* TO 'authgen_app'@'127.0.0.1';
+GRANT CREATE, ALTER, INDEX, DROP, REFERENCES ON keygen.* TO 'keygen_app'@'127.0.0.1';
 
 FLUSH PRIVILEGES;
 EXIT;
@@ -297,7 +297,7 @@ Then in a browser:
 - [ ] a restore test done once:
 
 ```bash
-mysql -u root -p authgen < deploy/backups/authgen-YYYYmmdd-HHMMSS.sql
+mysql -u root -p keygen < deploy/backups/keygen-YYYYmmdd-HHMMSS.sql
 ```
 
 ---

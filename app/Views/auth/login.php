@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sign in · KeyVault</title>
+<title>Sign in · KeyGen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -49,7 +49,7 @@
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
       </div>
       <div>
-        <div class="kg-brand-name" style="font-size:18px">KeyVault</div>
+        <div class="kg-brand-name" style="font-size:18px">KeyGen</div>
         <div class="kg-brand-sub">Secure Console</div>
       </div>
     </div>
@@ -100,7 +100,7 @@
     </form>
 
     <p class="text-center mb-0 mt-4" style="font-size:11.5px;color:var(--kg-text-3)">
-      Protected by KeyVault · <span class="kg-mono">API v1</span>
+      Protected by KeyGen · <span class="kg-mono">API v1</span>
     </p>
   </div>
 </div>

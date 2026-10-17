@@ -59,7 +59,7 @@ $idleMinutes = (int) (config('App')->autoLogoutMinutes ?? 30);
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= esc($pageTitle) ?> · KeyVault</title>
+<title><?= esc($pageTitle) ?> · KeyGen</title>
 
 <meta name="csrf-token" content="<?= csrf_hash() ?>" data-token-name="<?= csrf_token() ?>">
 <meta name="kg-idle-minutes" content="<?= (int) $idleMinutes ?>">
@@ -89,7 +89,7 @@ window.__KG_FLASH__ = {
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
       </div>
       <div>
-        <div class="kg-brand-name">KeyVault</div>
+        <div class="kg-brand-name">KeyGen</div>
         <div class="kg-brand-sub">License System</div>
       </div>
     </div>

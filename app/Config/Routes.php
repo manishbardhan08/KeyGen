@@ -1,7 +1,7 @@
 <?php
 
 /**
- * KeyVault routes.
+ * KeyGen routes.
  *
  * NOTE: every state-changing action is POST (CSRF-protected).
  * Destructive POSTs (delete/logout) additionally use a *_method_override-free

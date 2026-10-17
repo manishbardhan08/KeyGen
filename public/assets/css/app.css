@@ -10877,10 +10877,10 @@ textarea.form-control-lg {
 
 /*# sourceMappingURL=bootstrap.css.map */
 
-/* ==================== KeyVault Theme & Custom UI ==================== */
+/* ==================== KeyGen Theme & Custom UI ==================== */
 
 /* ============================================================
-   KeyVault · Premium Bootstrap Theme  (v2)
+   KeyGen · Premium Bootstrap Theme  (v2)
    Indigo/Violet SaaS · light + dark · refined
    Loaded AFTER bootstrap.css. Overrides via design tokens.
    ============================================================ */
@@ -11567,7 +11567,7 @@ table.kg-table thead th.sort-desc::after { content: ' ▼'; font-size: 8px; opac
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 /* ==========================================================================
-   KeyVault Modern UI Enhancements & Auth System Styling
+   KeyGen Modern UI Enhancements & Auth System Styling
    ========================================================================== */
 
 /* Enhanced Login Styles */

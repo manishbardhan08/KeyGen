@@ -19,10 +19,10 @@ use Config\Services;
  *
  * Usage:
  *   # rotate to a freshly generated key and print the .env line
- *   php spark keyvault:reencrypt
+ *   php spark keygen:reencrypt
  *
  *   # rotate from a known old key to a known new key
- *   php spark keyvault:reencrypt --old=<64-hex> --new=<64-hex>
+ *   php spark keygen:reencrypt --old=<64-hex> --new=<64-hex>
  *
  * The command reads the OLD key from `encryption.key` when `--old` is omitted,
  * and prints the new `encryption.key` line to paste into `.env`. It does NOT
@@ -30,10 +30,10 @@ use Config\Services;
  */
 class ReencryptSecrets extends BaseCommand
 {
-    protected $group       = 'KeyVault';
-    protected $name        = 'keyvault:reencrypt';
+    protected $group       = 'KeyGen';
+    protected $name        = 'keygen:reencrypt';
     protected $description = 'Rotate the encryption key and re-encrypt stored secrets.';
-    protected $usage       = 'keyvault:reencrypt [--old <hex>] [--new <hex>]';
+    protected $usage       = 'keygen:reencrypt [--old <hex>] [--new <hex>]';
     protected $options     = [
         '--old' => 'Current 64-char hex key. Defaults to encryption.key from config.',
         '--new' => 'New 64-char hex key. Defaults to a freshly generated one.',

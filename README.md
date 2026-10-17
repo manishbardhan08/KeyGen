@@ -1,4 +1,4 @@
-# KeyVault
+# KeyGen
 
 A CodeIgniter 4 license-key management console. It issues, distributes and
 validates software license keys with **HWID (device) binding**, and exposes a
@@ -70,7 +70,7 @@ OWNER_PASSWORD='a-strong-password' php spark db:seed OwnerSeeder
 to rotate it, do **not** just change `.env` — re-encrypt first:
 
 ```bash
-php spark keyvault:reencrypt        # prints the new encryption.key line for .env
+php spark keygen:reencrypt        # prints the new encryption.key line for .env
 ```
 
 ## API
@@ -104,16 +104,6 @@ least-privilege DB user, TLS/HSTS, backups).
 
 ```bash
 composer test        # phpunit
-```
-
-## Python tester
-
-A small Python client + CLI/GUI tester for checking what each license level
-unlocks lives at the repo root — see [KEYTEST.md](KEYTEST.md):
-
-```bash
-python3 keytest.py compare        # basic vs pro vs admin
-python3 keyvault_app.py           # desktop app
 ```
 
 ## License

@@ -1,13 +1,11 @@
 {
-    "name": "codeigniter4/framework",
-    "description": "The CodeIgniter framework v4",
+    "name": "keygen/app",
+    "description": "KeyGen — license-key management console (CodeIgniter 4)",
     "license": "MIT",
     "type": "project",
-    "homepage": "https://codeigniter.com",
+    "homepage": "https://github.com/manishbardhan08/KeyGen",
     "support": {
-        "forum": "https://forum.codeigniter.com/",
-        "source": "https://github.com/codeigniter4/CodeIgniter4",
-        "slack": "https://codeigniterchat.slack.com"
+        "source": "https://github.com/manishbardhan08/KeyGen"
     },
     "require": {
         "php": "^8.1",

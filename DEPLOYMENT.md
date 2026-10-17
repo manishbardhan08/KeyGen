@@ -1,4 +1,4 @@
-# KeyVault — Production Deployment Guide
+# KeyGen — Production Deployment Guide
 
 A CodeIgniter 4 license-key console. This document covers going live safely.
 
@@ -55,8 +55,8 @@ it decrypts stored API-key display copies. Losing it makes them unreadable.
 Do **not** run the app as `root`. Create a scoped user:
 
 ```sql
-CREATE USER 'authgen_app'@'127.0.0.1' IDENTIFIED BY 'STRONG_PASSWORD_HERE';
-GRANT SELECT, INSERT, UPDATE, DELETE ON authgen.* TO 'authgen_app'@'127.0.0.1';
+CREATE USER 'keygen_app'@'127.0.0.1' IDENTIFIED BY 'STRONG_PASSWORD_HERE';
+GRANT SELECT, INSERT, UPDATE, DELETE ON keygen.* TO 'keygen_app'@'127.0.0.1';
 FLUSH PRIVILEGES;
 ```
 
@@ -99,13 +99,13 @@ The document root **must** be `public/`. Never expose the app root —
 ```apache
 <VirtualHost *:443>
     ServerName your-domain.com
-    DocumentRoot /var/www/authgen/public
+    DocumentRoot /var/www/keygen/public
 
     SSLEngine on
     SSLCertificateFile      /etc/letsencrypt/live/your-domain.com/fullchain.pem
     SSLCertificateKeyFile   /etc/letsencrypt/live/your-domain.com/privkey.pem
 
-    <Directory /var/www/authgen/public>
+    <Directory /var/www/keygen/public>
         AllowOverride All
         Require all granted
     </Directory>
@@ -121,7 +121,7 @@ The document root **must** be `public/`. Never expose the app root —
 server {
     listen 443 ssl http2;
     server_name your-domain.com;
-    root /var/www/authgen/public;
+    root /var/www/keygen/public;
 
     ssl_certificate     /etc/letsencrypt/live/your-domain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
@@ -148,10 +148,10 @@ Get a certificate with `certbot --nginx -d your-domain.com`.
 
 ```cron
 # prune expired API sessions — daily 03:00
-0 3 * * * cd /var/www/authgen && php spark sessions:prune >> writable/logs/prune.log 2>&1
+0 3 * * * cd /var/www/keygen && php spark sessions:prune >> writable/logs/prune.log 2>&1
 
 # nightly DB backup — keep 14 days
-0 2 * * * /var/www/authgen/deploy/backup-db.sh >> writable/logs/backup.log 2>&1
+0 2 * * * /var/www/keygen/deploy/backup-db.sh >> writable/logs/backup.log 2>&1
 ```
 
 `deploy/backup-db.sh` is included in this repo.
@@ -187,7 +187,7 @@ Then log in as owner / admin / seller and confirm:
 Backups land in `deploy/backups/` (git-ignored). Restore:
 
 ```bash
-mysql -u root -p authgen < deploy/backups/authgen-YYYYmmdd-HHMMSS.sql
+mysql -u root -p keygen < deploy/backups/keygen-YYYYmmdd-HHMMSS.sql
 ```
 
 Back up **`.env`** and the **encryption key** out-of-band too — the DB dump

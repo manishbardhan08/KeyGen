@@ -2,6 +2,9 @@
 # Secrets & environment — NEVER commit
 # ------------------------------------------------------------------
 .env
+.env.*
+!.env.example
+!.env.production.example
 
 # ------------------------------------------------------------------
 # Runtime writable dirs

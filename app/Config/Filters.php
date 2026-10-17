@@ -36,6 +36,7 @@ class Filters extends BaseFilters
         'role'          => \App\Filters\RoleFilter::class,
         'apiguard'      => \App\Filters\ApiGuardFilter::class,
         'remember'      => \App\Filters\RememberFilter::class,
+        'auth'          => \App\Filters\AuthFilter::class,
     ];
 
     /**
@@ -82,6 +83,11 @@ class Filters extends BaseFilters
             // arrives with an expired session but a valid remember cookie has
             // to be authenticated first, otherwise CSRF rejects it outright.
             'remember' => ['except' => ['api/v1/*']],
+            // Signed-in check must also run BEFORE csrf. An expired session
+            // (e.g. after the 30-minute idle timeout) must redirect to /login,
+            // not die on the CSRF filter's "action not allowed" page when the next
+            // request happens to be a POST. Public routes + API are excluded.
+            'auth' => ['except' => ['api/v1/*', 'login', '/']],
             'csrf' => ['except' => ['api/v1/*']],
             // 'honeypot',
             // 'invalidchars',

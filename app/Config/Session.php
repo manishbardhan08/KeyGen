@@ -39,8 +39,12 @@ class Session extends BaseConfig
      *
      * The number of SECONDS you want the session to last.
      * Setting to 0 (zero) means expire when the browser is closed.
+     *
+     * 1800 = 30 minutes. After 30 idle minutes the session is gone and the
+     * next request (GET or POST) is redirected to /login by AuthFilter.
+     * Override per environment in `.env`:  session.expiration = 1800
      */
-    public int $expiration = 7200;
+    public int $expiration = 1800;
 
     /**
      * --------------------------------------------------------------------------

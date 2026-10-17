@@ -1,3 +1,0 @@
-# KeyVault is a private license-management console — no public indexing.
-User-agent: *
-Disallow: /

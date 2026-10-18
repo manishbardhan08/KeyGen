@@ -57,9 +57,9 @@ so an admin can license their own software or resell through sellers.
   redirecting, so credentials never travel in the clear.
 - In production sessions are IP-bound; sign-out destroys the session and clears the
   remember cookie.
-- **Error responses never leak internals** — the raw exception message/stack is
-  shown only when `CI_ENVIRONMENT ≠ production`; production visitors get the branded
-  page above.
+- **Error responses never leak internals** — the branded pages never print the
+  exception message or stack in **any** environment; visitors always get the page
+  above, and developers still get CodeIgniter's full trace page for uncaught 500s.
 
 Full checklist: [DEPLOYMENT.md](DEPLOYMENT.md) §12 / §13.
 
@@ -128,9 +128,10 @@ All responses are `Cache-Control: no-store`. In production, plain-HTTP calls are
 rejected with `426 Upgrade Required` so credentials never travel in the clear, and an
 admin's software kill-switch answers with `503`.
 
-Full request/response reference, error codes, rate limits and client examples (cURL,
-PHP, Python, C#, Node.js): see [API.md](API.md). Admins can also read the same reference
-in-app at **Admin → Developer → API Docs** (`/admin/docs`).
+Full request/response reference, error codes, rate limits and complete client examples
+(cURL, Python, PHP, Node.js, C#, Go, Java, C++) — each running the full `auth → validate →
+logout` flow — are in [API.md](API.md). Admins can also read the same reference in-app
+at **Admin → Developer → API Docs** (`/admin/docs`).
 
 ## Scheduled jobs
 

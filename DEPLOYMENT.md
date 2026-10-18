@@ -344,7 +344,7 @@ label (may be `null` for level 0 or an unnamed level).
 | Login throttle | `Controllers/Auth.php` |
 | Panel write throttle (per user + per IP) | `Filters/PanelThrottleFilter.php` |
 | Strict `script-src` via nonces (`'unsafe-inline'` removed) | `Config/ContentSecurityPolicy.php` + views |
-| Branded error pages; no stack/message leaked in prod | `app/Views/errors/html/*.php` |
+| Branded error pages; exception message/stack never rendered | `app/Views/errors/html/*.php` |
 | GET→POST destructive routes | `Config/Routes.php` |
 | Atomic balance debit | `Controllers/Seller.php` |
 | Cascade deletes | `Controllers/Admin.php`, `Owner.php` |

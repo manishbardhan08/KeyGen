@@ -16,15 +16,15 @@
  *  - Dark mode follows the OS (`prefers-color-scheme`) because the panel's
  *    localStorage theme cannot be read without JavaScript, and error responses
  *    must stay script-free.
- *  - No secrets are ever echoed: the raw exception message is only shown when
- *    ENVIRONMENT is not production (and only if the view passes it in).
+ *  - No internals are ever echoed: the exception message and stack are never
+ *    printed, in any environment. (In development an uncaught 500 still lands
+ *    on CodeIgniter's full trace page; a 404 simply means "no route".)
  *
  * Expected variables (all optional, sensible defaults applied below):
  *  @var string|null $kgCode    HTTP status shown big, e.g. "404"
  *  @var string|null $kgHeading Short human title, e.g. "Page not found"
  *  @var string|null $kgText    One-line explanation for the visitor
  *  @var string|null $kgTone    Accent: "primary" | "warning" | "danger" | "info"
- *  @var string|null $kgDetail  Raw error detail (shown only outside production)
  */
 
 // The `url` helper is not autoloaded for the exception handler, so make sure
@@ -37,8 +37,6 @@ $kgCode    = (string) ($kgCode    ?? '500');
 $kgHeading = $kgHeading ?? 'Something went wrong';
 $kgText    = $kgText    ?? 'Please try again in a moment.';
 $kgTone    = $kgTone    ?? 'primary';
-$kgDetail  = ($kgDetail ?? null) ?: null;
-$kgIsDev   = (ENVIRONMENT !== 'production');
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -102,13 +100,6 @@ body::before {
 .kg-err[data-tone="info"]    .kg-err-code { background:linear-gradient(135deg,#2b6de5,#5a4bf0); -webkit-background-clip:text; background-clip:text; }
 .kg-err h1 { font-size:22px; letter-spacing:-.02em; margin:0 0 10px; }
 .kg-err-text { margin:0 auto; max-width:42ch; font-size:14px; line-height:1.6; color:var(--kg-text-2); }
-.kg-err-detail {
-  margin:22px 0 0; padding:13px 16px; border-radius:12px; text-align:left;
-  background:rgba(90,75,240,.07); border:1px solid var(--kg-border);
-  color:var(--kg-text-2); font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size:12px; line-height:1.55; white-space:pre-wrap; word-break:break-word;
-  max-height:220px; overflow:auto;
-}
 .kg-err-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:28px; }
 .kg-err-btn {
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
@@ -139,10 +130,6 @@ body::before {
         <div class="kg-err-code" aria-hidden="true"><?= esc($kgCode) ?></div>
         <h1><?= esc($kgHeading) ?></h1>
         <p class="kg-err-text"><?= esc($kgText) ?></p>
-
-        <?php if ($kgIsDev && $kgDetail !== null): ?>
-            <pre class="kg-err-detail"><?= esc($kgDetail) ?></pre>
-        <?php endif; ?>
 
         <div class="kg-err-actions">
             <a class="kg-err-btn kg-err-btn-primary" href="<?= esc(base_url('/')) ?>">Go to dashboard</a>

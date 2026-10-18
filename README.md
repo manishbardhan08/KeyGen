@@ -40,6 +40,9 @@ so an admin can license their own software or resell through sellers.
   HTTPS-only in production.
 - **Panel** — CSV export, dark/light theme, 30-minute idle auto-logout with a
   "still there?" warning, and "remember me".
+- **Branded error pages** — `400` / `403` / `404` / `429` / `500` render a
+  self-contained, light-and-dark KeyGen page (`app/Views/errors/html/`) that needs
+  no assets or database to display.
 
 ## Security
 
@@ -54,6 +57,9 @@ so an admin can license their own software or resell through sellers.
   redirecting, so credentials never travel in the clear.
 - In production sessions are IP-bound; sign-out destroys the session and clears the
   remember cookie.
+- **Error responses never leak internals** — the raw exception message/stack is
+  shown only when `CI_ENVIRONMENT ≠ production`; production visitors get the branded
+  page above.
 
 Full checklist: [DEPLOYMENT.md](DEPLOYMENT.md) §12 / §13.
 

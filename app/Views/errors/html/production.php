@@ -1,25 +1,17 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="robots" content="noindex">
+<?php
+/**
+ * Generic "unexpected error" page (usually 500).
+ *
+ * CodeIgniter falls back to this view for every failing status that does not
+ * have its own `error_<code>.php` file, so it must never leak internals: the
+ * exception message is only passed through outside production. While developing
+ * you will normally see the full stack trace (error_exception.php) instead,
+ * because display_errors is on there.
+ */
+$kgCode    = (string) ($code ?? 500);
+$kgHeading = 'Something went wrong';
+$kgText    = 'We hit an unexpected snag. Please try again in a moment — if it keeps happening, contact your administrator.';
+$kgTone    = 'danger';
+$kgDetail  = (ENVIRONMENT !== 'production') ? ($message ?? null) : null;
 
-    <title><?= lang('Errors.whoops') ?></title>
-
-    <style>
-        <?= preg_replace('#[\r\n\t ]+#', ' ', file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'debug.css')) ?>
-    </style>
-</head>
-<body>
-
-    <div class="container text-center">
-
-        <h1 class="headline"><?= lang('Errors.whoops') ?></h1>
-
-        <p class="lead"><?= lang('Errors.weHitASnag') ?></p>
-
-    </div>
-
-</body>
-
-</html>
+require __DIR__ . '/_kg_error.php';

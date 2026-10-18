@@ -6,6 +6,10 @@ ready.
 
 > Deep reference & background: [`DEPLOYMENT.md`](DEPLOYMENT.md).
 > This file is the short, ordered "do this now" runbook.
+>
+> **On cPanel / shared hosting instead of a VPS?** You can skip Phases 3, 7 and 8
+> and follow the [cPanel section](#alternative-cpanel-shared-hosting) at the end
+> of this file (the rest — `.env`, migrations, cron, backups — still applies).
 
 ---
 
@@ -359,3 +363,200 @@ sudo systemctl reload php8.2-fpm
 | `session.expiration` | server idle timeout (seconds) |
 | `OWNER_NAME` / `OWNER_USERNAME` / `OWNER_PASSWORD` | owner created by `db:seed OwnerSeeder` |
 | `logger.threshold` | `1` errors only … `4` everything |
+
+---
+
+# Alternative: cPanel shared hosting
+
+Use this **instead of the VPS phases** if you are on cPanel. There is no
+`apt`/`nginx`/`systemd`: cPanel is Apache (or LiteSpeed) + PHP-FPM with
+`~/public_html` as the web root, driven from a control panel instead of the shell.
+This section is self-contained for the parts that differ (files, web root, PHP,
+database, migrations, permissions); the `.env` **values**, scheduled jobs and
+backups are the same as the VPS runbook — you just trigger them from cPanel's UI
+(*Cron Jobs*, *phpMyAdmin*).
+
+## Why the "split layout"
+
+cPanel normally gives you **one** web root (`~/public_html`) and no clean way to
+point it at the app's `public/` folder. The split layout works around that
+**without** changing the document root, and — unlike dumping the whole app inside
+`public_html` — it keeps `.env`, `app/` and `vendor/` **outside the web root**, so
+nothing sensitive is exposed even if `.htaccess` is ignored.
+
+```
+/home/USER/
+├── keygen/                   ← the whole project, OUTSIDE the web root
+│   ├── app/                    (incl. app/Views/errors/html/ — the branded error pages)
+│   ├── system/  vendor/  writable/  tests/  deploy/
+│   ├── .env
+│   ├── spark  composer.json  composer.lock  preload.php  phpunit.xml.dist
+│   └── public/                 ← emptied: its *contents* move to public_html
+└── public_html/              ← the web root: only public/'s contents
+    ├── index.php
+    ├── .htaccess
+    ├── assets/
+    ├── favicon.ico
+    └── robots.txt
+```
+
+The two paths are wired together by **two small edits** (Step 2).
+
+## Step 1 — Put the files in place
+
+Upload `keygen.zip` (the whole repo) to `/home/USER/` and extract it, then:
+
+1. open `keygen/public/` → select **everything** → **Cut** → open `public_html/` → **Paste**
+2. delete the now-empty `keygen/public/`
+3. in `public_html/`, delete any default `index.html` / `default.html` / placeholder
+4. `keygen/.env` must end up as `/home/USER/keygen/.env` (create it here in Step 3)
+
+> Never move `keygen/` itself under `public_html/`.
+
+## Step 2 — Edit two files (required)
+
+`index.php` and `spark` assume `app/` sits **next to** `public/`; here they sit two
+levels apart. Fix both.
+
+**`public_html/index.php`** — the require line:
+
+```php
+// before
+require FCPATH . '../app/Config/Paths.php';
+// after
+require FCPATH . '../keygen/app/Config/Paths.php';
+```
+
+**`keygen/spark`** — `public/` is hard-coded in two places:
+
+```php
+// before
+define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR);
+// after
+define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public_html' . DIRECTORY_SEPARATOR);
+```
+
+```php
+// before  (the line whose own comment says "change this line if you move your application folder")
+require FCPATH . '../app/Config/Paths.php';
+// after
+require __DIR__ . '/app/Config/Paths.php';
+```
+
+That is everything — `.env`, `writable/`, `system/` and the error views all resolve
+through `Paths.php` automatically.
+
+## Step 3 — `.env`
+
+`cp .env.production.example keygen/.env`, then set at minimum (search for `CHANGE`):
+
+| Key | Value |
+|---|---|
+| `app.baseURL` | `'https://your-domain.com/'` — **trailing slash required** |
+| `database.default.*` | cPanel DB name / user / password |
+| `encryption.key` | run `php spark key:generate` (Step 6) |
+| `OWNER_NAME` / `OWNER_USERNAME` / `OWNER_PASSWORD` | your owner login |
+
+> A wrong/absent `app.baseURL` is the #1 cause of weirdness on cPanel — it breaks
+> asset URLs, redirects **and** the error-page buttons, which all use `base_url()`.
+
+## Step 4 — PHP version & extensions
+
+cPanel → **MultiPHP Manager**: select **PHP 8.1+** for the domain.
+cPanel → **MultiPHP INI Editor** (or *Select PHP Version → Extensions*): enable
+
+```
+intl  mbstring  openssl  curl  dom  libxml  simplexml  mysqli  gd  xml
+```
+
+`intl` is a hard requirement (`composer install` and the app both need it).
+
+## Step 5 — Database
+
+cPanel → **MySQL Databases**: create a database + user and **add the user to the
+database** (all privileges). cPanel prefixes names with your account, e.g.
+`USER_keygen`. Put those exact names in `keygen/.env`.
+
+## Step 6 — Tables + owner
+
+**With Terminal** (cPanel → *Advanced → Terminal*):
+
+```bash
+cd ~/keygen
+php spark migrate
+php spark db:seed OwnerSeeder
+php spark cache:clear
+```
+
+**Without Terminal** — use a throwaway Cron Job (cPanel → *Cron Jobs*), one minute
+apart, then delete the job:
+
+```
+/usr/local/bin/php /home/USER/keygen/spark migrate
+/usr/local/bin/php /home/USER/keygen/spark db:seed OwnerSeeder
+```
+
+> The PHP binary may differ per host. Check with `which php` in Terminal, or use the
+> MultiPHP build at `/opt/cpanel/ea-php82/root/usr/bin/php`.
+> Last resort: import the SQL from a local `php spark db:table --export` dump via
+> **phpMyAdmin**, and insert the owner row manually.
+
+## Step 7 — Permissions
+
+```bash
+chmod -R 755 /home/USER/keygen/writable
+```
+
+PHP runs as your cPanel user, so `writable/` just needs to be writable by you
+(`755` on dirs, `644` on files). No `chown www-data` on cPanel.
+
+## Step 8 — Verify
+
+```bash
+curl -sI https://your-domain.com/login | grep -iE 'content-security|strict-transport'
+curl -sIL https://your-domain.com/.env | grep -iE 'HTTP/|content-type'   # expect 404/403, never text/plain
+```
+
+Then in a browser:
+
+- [ ] `/login` loads over HTTPS and you can sign in as **owner**
+- [ ] the URL never shows `/public/`
+- [ ] open a bad URL (e.g. `/does-not-exist`) → the branded **404** page appears
+- [ ] the browser console shows **no** CSP violations
+
+> The branded error pages live in `keygen/app/Views/errors/html/` — outside the
+> web root here, so there is nothing to configure.
+
+## Updating later (cPanel)
+
+```bash
+cd ~/keygen
+git pull                       # or re-upload the changed files
+composer install --no-dev --optimize-autoloader
+php spark migrate
+php spark cache:clear
+```
+
+Then re-copy `keygen/public/*` into `public_html/` and **re-apply the
+`index.php` edit from Step 2** — that file is the one piece that lives outside the
+repo's `public/` folder.
+
+> **Prefer zero edits?** Keep the project intact at `~/keygen` (with its `public/`
+> folder) and make the web root a symlink instead:
+> ```bash
+> rm -rf ~/public_html && ln -s ~/keygen/public ~/public_html
+> ```
+> Then `index.php` and `spark` stay stock and survive updates untouched. This needs
+> your host to allow symlinked docroots (`FollowSymLinks`), which most cPanel hosts
+> do but a few disable. Re-check `~/public_html` after cPanel updates.
+
+## cPanel troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `app.baseURL` still `localhost`, assets 404 | `.env` in the wrong folder | it must be at `~/keygen/.env` (one level above `app/`) |
+| 500 on every page | missing `intl`/`mbstring`, or `writable/` not writable | enable extensions (Step 4); `chmod -R 755 ~/keygen/writable` |
+| `php spark` prints **nothing**, exits 1 | `writable/cache` missing, or Step 2 edits not saved | create `writable/{cache,logs,session,debugbar}`; re-check Step 2 |
+| Login loops / "action is not allowed" | serving over **http** while production cookies are `Secure` | enable a Let's Encrypt cert (cPanel → *SSL/TLS Status → Run AutoSSL*); or set `CI_ENVIRONMENT = development` temporarily to confirm |
+| Page 500s only when `Options` appears | host blocks `Options` overrides | comment out `Options +FollowSymLinks` in `public_html/.htaccess` |
+| Old CI4 welcome page shows | default `index.html` left in `public_html` | delete it (Step 1.3) |

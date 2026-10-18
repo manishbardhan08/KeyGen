@@ -148,6 +148,15 @@ server {
 
 Get a certificate with `certbot --nginx -d your-domain.com`.
 
+### cPanel / shared hosting
+
+If you cannot point the document root at `public/` (typical on cPanel), use the
+**split layout**: keep the app at `~/keygen` and place only the *contents* of
+`public/` in `~/public_html`. `.env`, `app/` and `vendor/` stay outside the web
+root. It needs two path edits (`public_html/index.php` and `spark`) and is
+documented step-by-step in
+[PRODUCTION.md → cPanel](PRODUCTION.md#alternative-cpanel-shared-hosting).
+
 ---
 
 ## 6. Scheduled jobs (cron)
@@ -335,6 +344,7 @@ label (may be `null` for level 0 or an unnamed level).
 | Login throttle | `Controllers/Auth.php` |
 | Panel write throttle (per user + per IP) | `Filters/PanelThrottleFilter.php` |
 | Strict `script-src` via nonces (`'unsafe-inline'` removed) | `Config/ContentSecurityPolicy.php` + views |
+| Branded error pages; no stack/message leaked in prod | `app/Views/errors/html/*.php` |
 | GET→POST destructive routes | `Config/Routes.php` |
 | Atomic balance debit | `Controllers/Seller.php` |
 | Cascade deletes | `Controllers/Admin.php`, `Owner.php` |
